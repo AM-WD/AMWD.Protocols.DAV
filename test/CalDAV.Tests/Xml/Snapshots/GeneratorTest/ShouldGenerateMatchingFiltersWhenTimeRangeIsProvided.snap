@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><cal:calendar-query xmlns:cal="urn:ietf:params:xml:ns:caldav"><d:prop xmlns:d="DAV:"><d:getetag /><cal:calendar-data /></d:prop><cal:filter><cal:comp-filter name="VCALENDAR"><cal:comp-filter name="VEVENT"><cal:time-range start="20250110T080000Z" end="20250215T080000Z" /></cal:comp-filter></cal:comp-filter></cal:filter></cal:calendar-query>

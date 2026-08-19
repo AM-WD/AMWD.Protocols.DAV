@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><d:propfind xmlns:d="DAV:"><d:prop><d:displayname /><d:resourcetype /><d:getctag /><d:getetag /><d:calendar-description /><d:calendar-color /><cal:supported-calendar-component-set xmlns:cal="urn:ietf:params:xml:ns:caldav" /></d:prop></d:propfind>
