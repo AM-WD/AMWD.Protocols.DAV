@@ -1,0 +1,74 @@
+name: Dev Build
+
+on:
+  push:
+    tags:
+      - 'cal/v*'
+
+env:
+  TZ: 'Europe/Berlin'
+  CONFIGURATION: 'Release'
+  CI_COMMIT_TAG: ${{ github.ref_name }}
+
+jobs:
+  prepare:
+    runs-on: ubuntu
+
+    defaults:
+      run:
+        shell: bash
+
+    outputs:
+      hostname: ${{ steps.parse.outputs.hostname }}
+
+    steps:
+      - name: Parse push event
+        uses: actions/am-wd/parse-event@main
+        id: parse
+
+  build-test-deploy:
+    needs: [ prepare ]
+    runs-on: ubuntu
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      CI_SERVER_HOST: ${{ needs.prepare.outputs.hostname }}
+
+    steps:
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.x
+          cache: false
+
+      - name: Checkout repository code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Restore Tools
+        run: |
+          set -ex
+          dotnet tool install dotnet-reportgenerator-globaltool --tool-path /dotnet-tools
+
+      - name: Build Solution
+        run: |
+          set -ex
+          dotnet build -c ${CONFIGURATION} --nologo --restore --force --no-cache
+
+      - name: Test Solution
+        run: |
+          set -ex
+          dotnet test -c ${CONFIGURATION} --nologo --no-build /p:CoverletOutputFormat=Cobertura
+          /dotnet-tools/reportgenerator "-reports:${{ github.workspace }}/**/coverage.cobertura.xml" "-targetdir:/reports" "-reportType:TextSummary"
+          cat /reports/Summary.txt
+
+      - name: Publish NuGet
+        uses: actions/am-wd/publish-nuget@main
+        with:
+          api-key: ${{ secrets.NUGET_APIKEY }}
+          source: https://api.nuget.org/v3/index.json
+          package-name: 'AMWD.Protocols.CalDAV'

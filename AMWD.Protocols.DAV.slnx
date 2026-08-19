@@ -4,6 +4,7 @@
     <File Path="Directory.Build.props" />
   </Folder>
   <Folder Name="/Solution Items/build/workflows/">
+    <File Path=".github/workflows/caldav-release.yml" />
     <File Path=".github/workflows/development.yml" />
   </Folder>
   <Folder Name="/Solution Items/config/">
