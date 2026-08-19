@@ -10,7 +10,7 @@
 
     <Title>CalDAV implementation for .NET</Title>
     <Description>Using the DAV protocol to manage calendars and events.</Description>
-    <PackageTags>CalDAV caldendar events</PackageTags>
+    <PackageTags>CalDAV calendar events</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(CI_COMMIT_TAG)', '^cal\/v[0-9.]+'))">
