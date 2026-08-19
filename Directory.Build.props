@@ -1,0 +1,22 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>14.0</LangVersion>
+
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <CopyRefAssembliesToPublishDirectory>false</CopyRefAssembliesToPublishDirectory>
+
+    <Product>DAV protocol for .NET</Product>
+    <Company>AM.WD</Company>
+    <Authors>Andreas Müller</Authors>
+    <Copyright>© {copyright:2026-} AM.WD</Copyright>
+
+    <!-- CA1862: Use the 'StringComparison' method overloads to perform case-insensitive string comparisons -->
+    <!-- CA1873: Avoid potentially expensive logging -->
+    <!-- IDE0057: Use range operator -->
+    <!-- IDE0130: Namespace does not match folder structure -->
+    <!-- IDE0270: Null check can be simplified -->
+    <!-- IDE0290: Use primary constructor -->
+    <!-- IDE0305: Use collection expression for fluent -->
+    <NoWarn>$(NoWarn);CA1862;CA1873;IDE0057;IDE0130;IDE0270;IDE0290;IDE0305</NoWarn>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,109 @@
+name: Dev Build
+
+on:
+  push:
+    branches:
+      - '**'
+
+env:
+  TZ: 'Europe/Berlin'
+  CONFIGURATION: 'Debug'
+  CI_COMMIT_TAG: ${{ github.ref_name }}
+
+concurrency:
+  group: ${{ github.repository }}/${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu
+
+    defaults:
+      run:
+        shell: bash
+
+    outputs:
+      hostname: ${{ steps.parse.outputs.hostname }}
+      caldav-changes: ${{ steps.caldav-changes.outputs.has-changes }}
+#      carddav-changes: ${{ steps.carddav-changes.outputs.has-changes }}
+
+    steps:
+      - name: Parse push event
+        uses: actions/am-wd/parse-event@main
+        id: parse
+
+      - name: Check for changes 'CalDAV'
+        uses: actions/am-wd/check-changes@main
+        id: caldav-changes
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          paths: 'src/AMWD.Protocols.CalDAV'
+          base-commit: ${{ steps.parse.outputs.base-commit }}
+          head-commit: ${{ steps.parse.outputs.head-commit }}
+
+#      - name: Check for changes 'CardDAV'
+#        uses: actions/am-wd/check-changes@main
+#        id: carddav-changes
+#        with:
+#          access-token: ${{ secrets.GITHUB_TOKEN }}
+#          paths: 'src/AMWD.Protocols.CardDAV'
+#          base-commit: ${{ steps.parse.outputs.base-commit }}
+#          head-commit: ${{ steps.parse.outputs.head-commit }}
+
+  build-test-deploy:
+    needs: [ prepare ]
+    runs-on: ubuntu
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      CI_SERVER_HOST: ${{ needs.prepare.outputs.hostname }}
+
+    steps:
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.x
+          cache: false
+
+      - name: Checkout repository code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Restore Tools
+        run: |
+          set -ex
+          dotnet tool install dotnet-reportgenerator-globaltool --tool-path /dotnet-tools
+
+      - name: Build Solution
+        run: |
+          set -ex
+          dotnet build -c ${CONFIGURATION} --nologo --restore --force --no-cache
+
+      - name: Test Solution
+        run: |
+          set -ex
+          dotnet test -c ${CONFIGURATION} --nologo --no-build /p:CoverletOutputFormat=Cobertura
+          /dotnet-tools/reportgenerator "-reports:${{ github.workspace }}/**/coverage.cobertura.xml" "-targetdir:/reports" "-reportType:TextSummary"
+          cat /reports/Summary.txt
+
+      - name: Publish NuGet 'CalDAV'
+        if: needs.prepare.outputs.caldav-changes == 'true'
+        uses: actions/am-wd/publish-nuget@main
+        with:
+          api-key: ${{ secrets.BAGET_APIKEY }}
+          source: https://nuget.am-wd.de/v3/index.json
+          package-name: 'AMWD.Protocols.CalDAV'
+          overwrite: true
+
+#      - name: Publish NuGet 'CardDAV'
+#        if: needs.prepare.outputs.carddav-changes == 'true'
+#        uses: actions/am-wd/publish-nuget@main
+#        with:
+#          api-key: ${{ secrets.BAGET_APIKEY }}
+#          source: https://nuget.am-wd.de/v3/index.json
+#          package-name: 'AMWD.Protocols.CardDAV'
+#          overwrite: true
