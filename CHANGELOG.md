@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+_no changes yet_
+
+## CalDAV v0.1.0 | CardDAV v0.1.0 - 2026-08-20
+
+##### Diffs
+
+- [CalDAV](https://github.com/AM-WD/AMWD.Protocols.DAV/commits/cal/v0.1.0)
+- [CardDAV](https://github.com/AM-WD/AMWD.Protocols.DAV/commits/card/v0.1.0)
+
 ### Added
 
 - `CalDAV` project implementing basic support for CalDAV protocol.
