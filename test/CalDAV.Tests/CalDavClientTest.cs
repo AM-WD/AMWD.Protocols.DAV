@@ -187,7 +187,6 @@ namespace CalDAV.Tests
 			{
 				DisplayName = "Private",
 				Description = "Private Calendar",
-				Color = "#00ff00"
 			};
 
 			// Act

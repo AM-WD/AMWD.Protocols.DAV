@@ -31,7 +31,6 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = new XmlNamespaceManager(xDoc.NameTable);
 			namespaceManager.AddNamespace("d", "DAV:");
 			namespaceManager.AddNamespace("cal", "urn:ietf:params:xml:ns:caldav");
-			namespaceManager.AddNamespace("cs", "http://calendarserver.org/ns/");
 
 			var responses = xDoc.SelectNodes("//d:response", namespaceManager);
 			if (responses == null)
@@ -46,33 +45,29 @@ namespace AMWD.Protocols.CalDAV.Xml
 				var calendar = new DavCalendar();
 
 				var href = response.SelectSingleNode("d:href", namespaceManager);
-				if (href != null)
+				if (!string.IsNullOrWhiteSpace(href?.InnerText))
 				{
-					calendar.Name = href.InnerText.Trim('/').Split('/').LastOrDefault();
+					calendar.Name = href!.InnerText.Trim('/').Split('/').LastOrDefault();
 					calendar.Uri = principalUri == null
-						? new Uri(href.InnerText, UriKind.RelativeOrAbsolute)
-						: new Uri(principalUri, href.InnerText);
+						? new Uri(href!.InnerText, UriKind.RelativeOrAbsolute)
+						: new Uri(principalUri, href!.InnerText);
 				}
 
 				var displayName = response.SelectSingleNode(".//d:displayname", namespaceManager);
-				if (displayName != null)
-					calendar.DisplayName = displayName.InnerText.Trim();
+				if (!string.IsNullOrWhiteSpace(displayName?.InnerText))
+					calendar.DisplayName = displayName!.InnerText.Trim();
 
 				var description = response.SelectSingleNode(".//cal:calendar-description", namespaceManager);
-				if (description != null)
-					calendar.Description = description.InnerText.Trim();
+				if (!string.IsNullOrWhiteSpace(description?.InnerText))
+					calendar.Description = description!.InnerText.Trim();
 
-				var ctag = response.SelectSingleNode(".//cs:getctag", namespaceManager);
-				if (ctag != null)
-					calendar.CTag = ctag.InnerText.Trim().Trim('"');
+				var ctag = response.SelectSingleNode(".//d:getctag", namespaceManager);
+				if (!string.IsNullOrWhiteSpace(ctag?.InnerText))
+					calendar.CTag = ctag!.InnerText.Trim().Trim('"');
 
-				var etag = response.SelectSingleNode(".//cs:getetag", namespaceManager);
-				if (etag != null)
-					calendar.ETag = etag.InnerText.Trim().Trim('"');
-
-				var color = response.SelectSingleNode(".//cal:calendar-color", namespaceManager);
-				if (color != null)
-					calendar.Color = color.InnerText.Trim();
+				var etag = response.SelectSingleNode(".//d:getetag", namespaceManager);
+				if (!string.IsNullOrWhiteSpace(etag?.InnerText))
+					calendar.ETag = etag!.InnerText.Trim().Trim('"');
 
 				calendars.Add(calendar);
 			}
@@ -98,24 +93,24 @@ namespace AMWD.Protocols.CalDAV.Xml
 			foreach (XmlNode response in responses)
 			{
 				var calendarData = response.SelectSingleNode(".//cal:calendar-data", namespaceManager);
-				if (calendarData == null)
+				if (string.IsNullOrWhiteSpace(calendarData?.InnerText))
 					continue;
 
 				var calendarEvent = new DavEvent();
 
 				var href = response.SelectSingleNode("d:href", namespaceManager);
-				if (href != null)
+				if (!string.IsNullOrWhiteSpace(href?.InnerText))
 				{
 					calendarEvent.Href = calendarUri == null
-						? new Uri(href.InnerText, UriKind.RelativeOrAbsolute)
-						: new Uri(calendarUri, href.InnerText);
+						? new Uri(href!.InnerText, UriKind.RelativeOrAbsolute)
+						: new Uri(calendarUri, href!.InnerText);
 				}
 
 				var etag = response.SelectSingleNode(".//d:getetag", namespaceManager);
-				if (etag != null)
-					calendarEvent.ETag = etag.InnerText.Trim().Trim('"');
+				if (!string.IsNullOrWhiteSpace(etag?.InnerText))
+					calendarEvent.ETag = etag!.InnerText.Trim().Trim('"');
 
-				calendarEvent.RawEvent = calendarData.InnerText;
+				calendarEvent.RawEvent = calendarData!.InnerText;
 				ParseICal(calendarEvent);
 
 				events.Add(calendarEvent);

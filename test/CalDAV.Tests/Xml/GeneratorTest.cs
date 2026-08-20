@@ -9,7 +9,6 @@ namespace CalDAV.Tests.Xml
 	{
 		private string _displayName;
 		private string _description;
-		private string _color;
 		private DateTimeOffset _start;
 		private DateTimeOffset _end;
 
@@ -18,7 +17,6 @@ namespace CalDAV.Tests.Xml
 		{
 			_displayName = "Team Calendar";
 			_description = "Shared team calendar";
-			_color = "#FF0000";
 			_start = new DateTimeOffset(2025, 1, 10, 8, 0, 0, TimeSpan.Zero);
 			_end = new DateTimeOffset(2025, 2, 15, 8, 0, 0, TimeSpan.Zero);
 		}
@@ -53,7 +51,7 @@ namespace CalDAV.Tests.Xml
 			// Arrange
 
 			// Act
-			string xml = Generator.CreateCalendar(_displayName, _description, _color);
+			string xml = Generator.CreateCalendar(_displayName, _description);
 
 			// Assert
 			SnapshotAssert.AreEqual(xml);

@@ -28,11 +28,6 @@ namespace AMWD.Protocols.CalDAV
 		public Uri? Uri { get; set; }
 
 		/// <summary>
-		/// Gets or sets the color of the calendar, which can be used for visual differentiation in calendar applications.
-		/// </summary>
-		public string? Color { get; set; }
-
-		/// <summary>
 		/// Gets or sets the CTag of the calendar, which is a unique identifier that changes whenever the calendar's content changes, allowing clients to detect updates.
 		/// </summary>
 		public string? CTag { get; set; }

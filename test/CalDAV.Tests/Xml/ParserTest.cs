@@ -14,16 +14,15 @@ namespace CalDAV.Tests.Xml
 		public void Initialize()
 		{
 			_calendarXml = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-<d:multistatus xmlns:d=""DAV:"" xmlns:cal=""urn:ietf:params:xml:ns:caldav"" xmlns:cs=""http://calendarserver.org/ns/"">
+<d:multistatus xmlns:d=""DAV:"" xmlns:cal=""urn:ietf:params:xml:ns:caldav"">
   <d:response>
 	<d:href>/calendars/team/</d:href>
 	<d:propstat>
 	  <d:prop>
 		<d:displayname>Team Calendar</d:displayname>
 		<cal:calendar-description>Shared team calendar</cal:calendar-description>
-		<cs:getctag>""123""</cs:getctag>
-		<cs:getetag>""abc123""</cs:getetag>
-		<cal:calendar-color>#FF0000</cal:calendar-color>
+		<d:getctag>""123""</d:getctag>
+		<d:getetag>""abc123""</d:getetag>
 	  </d:prop>
 	  <d:status>HTTP/1.1 200 OK</d:status>
 	</d:propstat>
@@ -97,7 +96,6 @@ END:VCALENDAR</cal:calendar-data>
 			Assert.AreEqual("Shared team calendar", calendar.Description);
 			Assert.AreEqual("123", calendar.CTag);
 			Assert.AreEqual("abc123", calendar.ETag);
-			Assert.AreEqual("#FF0000", calendar.Color);
 			Assert.AreEqual(new Uri("https://example.com/calendars/team/"), calendar.Uri);
 		}
 
@@ -221,7 +219,6 @@ END:VCALENDAR</cal:calendar-data>
 			Assert.IsNull(calendar.Description);
 			Assert.IsNull(calendar.CTag);
 			Assert.IsNull(calendar.ETag);
-			Assert.IsNull(calendar.Color);
 		}
 
 		[TestMethod]

@@ -30,10 +30,5 @@
 		/// Gets or sets the description of the calendar to be created.
 		/// </summary>
 		public string? Description { get; set; }
-
-		/// <summary>
-		/// Gets or sets the color of the calendar to be created.
-		/// </summary>
-		public string? Color { get; set; }
 	}
 }

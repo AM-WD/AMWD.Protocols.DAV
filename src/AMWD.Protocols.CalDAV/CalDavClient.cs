@@ -79,7 +79,7 @@ namespace AMWD.Protocols.CalDAV
 		public Uri? PrincipalUri { get; private set; }
 
 		/// <summary>
-		/// Initializes the CalDavClient by discovering the current principal (user) on the CalDAV server.
+		/// Initializes the <see cref="CalDavClient"/> by discovering the current principal (user) on the CalDAV server.
 		/// </summary>
 		/// <param name="cancellationToken">A token to cancel the operation.</param>
 		/// <returns><see langword="true"/> if initialization was successful; otherwise, <see langword="false"/>.</returns>
@@ -146,7 +146,7 @@ namespace AMWD.Protocols.CalDAV
 
 			var httpRequest = new HttpRequestMessage(_httpMethodMkCalendar, calendarUri)
 			{
-				Content = new StringContent(Generator.CreateCalendar(request.DisplayName, request.Description, request.Color), Encoding.UTF8, XmlMimeType)
+				Content = new StringContent(Generator.CreateCalendar(request.DisplayName, request.Description), Encoding.UTF8, XmlMimeType)
 			};
 
 			var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken);

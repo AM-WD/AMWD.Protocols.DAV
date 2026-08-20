@@ -29,8 +29,7 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = CreateNamespaceManager(
 				xmlDocument,
 				("d", "DAV:"),
-				("cal", "urn:ietf:params:xml:ns:caldav"),
-				("cs", "http://calendarserver.org/ns/"));
+				("cal", "urn:ietf:params:xml:ns:caldav"));
 			xmlDocument.AppendChild(xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null));
 
 			var propFind = CreateElement(xmlDocument, namespaceManager, "d", "propfind");
@@ -45,25 +44,22 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var resourceType = CreateElement(xmlDocument, namespaceManager, "d", "resourcetype");
 			prop.AppendChild(resourceType);
 
+			var calendarDescription = CreateElement(xmlDocument, namespaceManager, "cal", "calendar-description");
+			prop.AppendChild(calendarDescription);
+
+			var supportedCalendarComponentSet = CreateElement(xmlDocument, namespaceManager, "cal", "supported-calendar-component-set");
+			prop.AppendChild(supportedCalendarComponentSet);
+
 			var getCtag = CreateElement(xmlDocument, namespaceManager, "d", "getctag");
 			prop.AppendChild(getCtag);
 
 			var getEtag = CreateElement(xmlDocument, namespaceManager, "d", "getetag");
 			prop.AppendChild(getEtag);
 
-			var calendarDescription = CreateElement(xmlDocument, namespaceManager, "d", "calendar-description");
-			prop.AppendChild(calendarDescription);
-
-			var calendarColor = CreateElement(xmlDocument, namespaceManager, "d", "calendar-color");
-			prop.AppendChild(calendarColor);
-
-			var supportedCalendarComponentSet = CreateElement(xmlDocument, namespaceManager, "cal", "supported-calendar-component-set");
-			prop.AppendChild(supportedCalendarComponentSet);
-
 			return xmlDocument.OuterXml;
 		}
 
-		public static string CreateCalendar(string? displayName, string? description, string? color)
+		public static string CreateCalendar(string? displayName, string? description)
 		{
 			var xmlDocument = new XmlDocument();
 			var namespaceManager = CreateNamespaceManager(
@@ -81,26 +77,11 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var prop = CreateElement(xmlDocument, namespaceManager, "d", "prop");
 			set.AppendChild(prop);
 
-			if (!string.IsNullOrWhiteSpace(displayName))
-			{
-				var displayNameElement = CreateElement(xmlDocument, namespaceManager, "d", "displayname");
-				displayNameElement.InnerText = displayName!.Trim();
-				prop.AppendChild(displayNameElement);
-			}
+			var resourceType = CreateElement(xmlDocument, namespaceManager, "d", "resourcetype");
+			prop.AppendChild(resourceType);
 
-			if (!string.IsNullOrWhiteSpace(description))
-			{
-				var descriptionElement = CreateElement(xmlDocument, namespaceManager, "cal", "calendar-description");
-				descriptionElement.InnerText = description!.Trim();
-				prop.AppendChild(descriptionElement);
-			}
-
-			if (!string.IsNullOrWhiteSpace(color))
-			{
-				var colorElement = CreateElement(xmlDocument, namespaceManager, "cal", "calendar-color");
-				colorElement.InnerText = color!.Trim();
-				prop.AppendChild(colorElement);
-			}
+			resourceType.AppendChild(CreateElement(xmlDocument, namespaceManager, "d", "collection"));
+			resourceType.AppendChild(CreateElement(xmlDocument, namespaceManager, "cal", "calendar"));
 
 			var componentSet = CreateElement(xmlDocument, namespaceManager, "cal", "supported-calendar-component-set");
 			prop.AppendChild(componentSet);
@@ -117,6 +98,20 @@ namespace AMWD.Protocols.CalDAV.Xml
 			todoElement.SetAttribute("name", "VTODO");
 			componentSet.AppendChild(todoElement);
 
+			if (!string.IsNullOrWhiteSpace(displayName))
+			{
+				var displayNameElement = CreateElement(xmlDocument, namespaceManager, "d", "displayname");
+				displayNameElement.InnerText = displayName!.Trim();
+				prop.AppendChild(displayNameElement);
+			}
+
+			if (!string.IsNullOrWhiteSpace(description))
+			{
+				var descriptionElement = CreateElement(xmlDocument, namespaceManager, "cal", "calendar-description");
+				descriptionElement.InnerText = description!.Trim();
+				prop.AppendChild(descriptionElement);
+			}
+
 			return xmlDocument.OuterXml;
 		}
 
@@ -126,8 +121,7 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = CreateNamespaceManager(
 				xmlDocument,
 				("d", "DAV:"),
-				("cal", "urn:ietf:params:xml:ns:caldav"),
-				("cs", "http://calendarserver.org/ns/"));
+				("cal", "urn:ietf:params:xml:ns:caldav"));
 			xmlDocument.AppendChild(xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null));
 
 			var calendarQuery = CreateElement(xmlDocument, namespaceManager, "cal", "calendar-query");

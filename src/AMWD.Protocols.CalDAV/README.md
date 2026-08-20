@@ -32,6 +32,7 @@ foreach (var calendar in calendars)
 
 ```
 
+
 ## Supported CalDAV Servers
 
 The support might be limited as some providers do not allow creating/deleting new calendars.    
@@ -68,6 +69,12 @@ Also the authentication is limited to Basic Authentication.
 - **Password**: your-app-specific-token
 
 
+_I used [sabre/dav] as orientation for the implementation._
+
 ---
 
 MIT License (see [choose a license](https://choosealicense.com/licenses/mit/)).
+
+
+
+[sabre/dav]: https://sabre.io/dav/building-a-caldav-client/
