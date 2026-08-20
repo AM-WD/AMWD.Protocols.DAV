@@ -1,9 +1,9 @@
-name: CalDAV Release Build
+name: CardDAV Release Build
 
 on:
   push:
     tags:
-      - 'cal/v*'
+      - 'card/v*'
 
 env:
   TZ: 'Europe/Berlin'
@@ -71,4 +71,4 @@ jobs:
         with:
           api-key: ${{ secrets.NUGET_APIKEY }}
           source: https://api.nuget.org/v3/index.json
-          package-name: 'AMWD.Protocols.CalDAV'
+          package-name: 'AMWD.Protocols.CardDAV'

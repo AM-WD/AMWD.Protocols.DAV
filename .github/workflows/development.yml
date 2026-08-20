@@ -25,7 +25,7 @@ jobs:
     outputs:
       hostname: ${{ steps.parse.outputs.hostname }}
       caldav-changes: ${{ steps.caldav-changes.outputs.has-changes }}
-#      carddav-changes: ${{ steps.carddav-changes.outputs.has-changes }}
+      carddav-changes: ${{ steps.carddav-changes.outputs.has-changes }}
 
     steps:
       - name: Parse push event
@@ -41,14 +41,14 @@ jobs:
           base-commit: ${{ steps.parse.outputs.base-commit }}
           head-commit: ${{ steps.parse.outputs.head-commit }}
 
-#      - name: Check for changes 'CardDAV'
-#        uses: actions/am-wd/check-changes@main
-#        id: carddav-changes
-#        with:
-#          access-token: ${{ secrets.GITHUB_TOKEN }}
-#          paths: 'src/AMWD.Protocols.CardDAV'
-#          base-commit: ${{ steps.parse.outputs.base-commit }}
-#          head-commit: ${{ steps.parse.outputs.head-commit }}
+      - name: Check for changes 'CardDAV'
+        uses: actions/am-wd/check-changes@main
+        id: carddav-changes
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+          paths: 'src/AMWD.Protocols.CardDAV'
+          base-commit: ${{ steps.parse.outputs.base-commit }}
+          head-commit: ${{ steps.parse.outputs.head-commit }}
 
   build-test-deploy:
     needs: [ prepare ]
@@ -99,11 +99,11 @@ jobs:
           package-name: 'AMWD.Protocols.CalDAV'
           overwrite: true
 
-#      - name: Publish NuGet 'CardDAV'
-#        if: needs.prepare.outputs.carddav-changes == 'true'
-#        uses: actions/am-wd/publish-nuget@main
-#        with:
-#          api-key: ${{ secrets.BAGET_APIKEY }}
-#          source: https://nuget.am-wd.de/v3/index.json
-#          package-name: 'AMWD.Protocols.CardDAV'
-#          overwrite: true
+      - name: Publish NuGet 'CardDAV'
+        if: needs.prepare.outputs.carddav-changes == 'true'
+        uses: actions/am-wd/publish-nuget@main
+        with:
+          api-key: ${{ secrets.BAGET_APIKEY }}
+          source: https://nuget.am-wd.de/v3/index.json
+          package-name: 'AMWD.Protocols.CardDAV'
+          overwrite: true
