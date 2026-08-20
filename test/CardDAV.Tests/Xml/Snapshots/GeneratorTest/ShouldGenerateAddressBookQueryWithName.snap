@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8"?><card:addressbook-query xmlns:card="urn:ietf:params:xml:ns:carddav"><d:prop xmlns:d="DAV:"><d:getetag /><card:address-data /></d:prop><card:filter><card:prop-filter name="N"><card:text-match collation="i;unicode-casemap">John Doe</card:text-match></card:prop-filter></card:filter></card:addressbook-query>

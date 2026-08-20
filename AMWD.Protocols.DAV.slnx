@@ -22,9 +22,11 @@
   <Folder Name="/src/">
     <File Path="src/Directory.Build.props" />
     <Project Path="src/AMWD.Protocols.CalDAV/AMWD.Protocols.CalDAV.csproj" />
+    <Project Path="src/AMWD.Protocols.CardDAV/AMWD.Protocols.CardDAV.csproj" />
   </Folder>
   <Folder Name="/test/">
     <File Path="test/Directory.Build.props" />
     <Project Path="test/CalDAV.Tests/CalDAV.Tests.csproj" />
+    <Project Path="test/CardDAV.Tests/CardDAV.Tests.csproj" />
   </Folder>
 </Solution>

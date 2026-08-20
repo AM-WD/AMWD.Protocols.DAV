@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../MSTestSettings.cs" Link="MSTestSettings.cs" />
+    <Compile Include="../SnapshotAssert.cs" Link="SnapshotAssert.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\AMWD.Protocols.CardDAV\AMWD.Protocols.CardDAV.csproj" />
+  </ItemGroup>
+
+</Project>

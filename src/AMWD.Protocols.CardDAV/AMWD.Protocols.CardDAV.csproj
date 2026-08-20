@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NrtTagMatch>card/v[0-9]*</NrtTagMatch>
+
+    <PackageId>AMWD.Protocols.CardDAV</PackageId>
+    <AssemblyName>amwd-carddav</AssemblyName>
+    <RootNamespace>AMWD.Protocols.CardDAV</RootNamespace>
+
+    <Title>CardDAV implementation for .NET</Title>
+    <Description>Using the DAV protocol to manage contacts.</Description>
+    <PackageTags>CardDAV contacts</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(CI_COMMIT_TAG)', '^card\/v[0-9.]+'))">
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="vCard.Net" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="CardDAV.Tests" />
+  </ItemGroup>
+
+</Project>
