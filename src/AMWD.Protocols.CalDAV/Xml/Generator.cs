@@ -29,7 +29,8 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = CreateNamespaceManager(
 				xmlDocument,
 				("d", "DAV:"),
-				("cal", "urn:ietf:params:xml:ns:caldav"));
+				("cal", "urn:ietf:params:xml:ns:caldav"),
+				("ical", "http://apple.com/ns/ical/"));
 			xmlDocument.AppendChild(xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null));
 
 			var propFind = CreateElement(xmlDocument, namespaceManager, "d", "propfind");
@@ -40,6 +41,9 @@ namespace AMWD.Protocols.CalDAV.Xml
 
 			var displayName = CreateElement(xmlDocument, namespaceManager, "d", "displayname");
 			prop.AppendChild(displayName);
+
+			var calendarColor = CreateElement(xmlDocument, namespaceManager, "ical", "calendar-color");
+			prop.AppendChild(calendarColor);
 
 			var resourceType = CreateElement(xmlDocument, namespaceManager, "d", "resourcetype");
 			prop.AppendChild(resourceType);
@@ -59,13 +63,14 @@ namespace AMWD.Protocols.CalDAV.Xml
 			return xmlDocument.OuterXml;
 		}
 
-		public static string CreateCalendar(string? displayName, string? description)
+		public static string CreateCalendar(string? displayName, string? description, string? color)
 		{
 			var xmlDocument = new XmlDocument();
 			var namespaceManager = CreateNamespaceManager(
 				xmlDocument,
 				("d", "DAV:"),
-				("cal", "urn:ietf:params:xml:ns:caldav"));
+				("cal", "urn:ietf:params:xml:ns:caldav"),
+				("ical", "http://apple.com/ns/ical/"));
 			xmlDocument.AppendChild(xmlDocument.CreateXmlDeclaration("1.0", "UTF-8", null));
 
 			var mkCalendar = CreateElement(xmlDocument, namespaceManager, "cal", "mkcalendar");
@@ -110,6 +115,13 @@ namespace AMWD.Protocols.CalDAV.Xml
 				var descriptionElement = CreateElement(xmlDocument, namespaceManager, "cal", "calendar-description");
 				descriptionElement.InnerText = description!.Trim();
 				prop.AppendChild(descriptionElement);
+			}
+
+			if (!string.IsNullOrWhiteSpace(color))
+			{
+				var colorElement = CreateElement(xmlDocument, namespaceManager, "ical", "calendar-color");
+				colorElement.InnerText = color!.Trim();
+				prop.AppendChild(colorElement);
 			}
 
 			return xmlDocument.OuterXml;

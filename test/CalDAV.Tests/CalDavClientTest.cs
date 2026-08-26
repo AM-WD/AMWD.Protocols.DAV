@@ -202,6 +202,113 @@ namespace CalDAV.Tests
 		}
 
 		[TestMethod]
+		public async Task ShouldCreateCalendarWithValidColor()
+		{
+			// Arrange
+			EnqueueResponses(
+				CreateResponse(HttpStatusCode.OK, headers: new Dictionary<string, string> { ["DAV"] = "1, calendar-access" }),
+				CreateResponse(HttpStatusCode.MultiStatus, CurrentPrincipalResponseXml("/principals/user/")),
+				CreateResponse(HttpStatusCode.MultiStatus, CalendarListResponseXml("/calendars/user/work/", "Work")),
+				CreateResponse(HttpStatusCode.Created));
+			var createRequest = new CreateCalendarRequest("colored")
+			{
+				DisplayName = "Colored Calendar",
+				Color = "#FF0000"
+			};
+
+			// Act
+			bool result = await _client.CreateCalendarAsync(createRequest, TestContext.CancellationToken);
+
+			// Assert
+			Assert.IsTrue(result);
+			Assert.HasCount(4, _requests);
+			Assert.AreEqual("MKCALENDAR", _requests[3].Method.Method);
+			string payload = await _requests[3].Content!.ReadAsStringAsync(TestContext.CancellationToken);
+			Assert.Contains("FF0000", payload);
+		}
+
+		[TestMethod]
+		public async Task ShouldThrowWhenCreateCalendarColorIsInvalidHexFormat()
+		{
+			// Arrange
+			EnqueueResponses(
+				CreateResponse(HttpStatusCode.OK, headers: new Dictionary<string, string> { ["DAV"] = "calendar-access" }),
+				CreateResponse(HttpStatusCode.MultiStatus, CurrentPrincipalResponseXml("/principals/user/")));
+			var createRequest = new CreateCalendarRequest("colored")
+			{
+				Color = "#ZZZ000"
+			};
+
+			// Act
+			var exception = await Assert.ThrowsExactlyAsync<ArgumentException>(async () => _ = await _client.CreateCalendarAsync(createRequest, TestContext.CancellationToken));
+
+			// Assert
+			Assert.IsNotNull(exception);
+			Assert.AreEqual("Calendar color must be a valid hex color code (#RRGGBB, e.g. #aBc123). (Parameter 'Color')", exception.Message);
+		}
+
+		[TestMethod]
+		public async Task ShouldThrowWhenCreateCalendarColorIsTooShort()
+		{
+			// Arrange
+			EnqueueResponses(
+				CreateResponse(HttpStatusCode.OK, headers: new Dictionary<string, string> { ["DAV"] = "calendar-access" }),
+				CreateResponse(HttpStatusCode.MultiStatus, CurrentPrincipalResponseXml("/principals/user/")));
+			var createRequest = new CreateCalendarRequest("colored")
+			{
+				Color = "#FF0"
+			};
+
+			// Act
+			var exception = await Assert.ThrowsExactlyAsync<ArgumentException>(async () => _ = await _client.CreateCalendarAsync(createRequest, TestContext.CancellationToken));
+
+			// Assert
+			Assert.IsNotNull(exception);
+			Assert.AreEqual("Calendar color must be a valid hex color code (#RRGGBB, e.g. #aBc123). (Parameter 'Color')", exception.Message);
+		}
+
+		[TestMethod]
+		public async Task ShouldThrowWhenCreateCalendarColorHasNoHashPrefix()
+		{
+			// Arrange
+			EnqueueResponses(
+				CreateResponse(HttpStatusCode.OK, headers: new Dictionary<string, string> { ["DAV"] = "calendar-access" }),
+				CreateResponse(HttpStatusCode.MultiStatus, CurrentPrincipalResponseXml("/principals/user/")));
+			var createRequest = new CreateCalendarRequest("colored")
+			{
+				Color = "FF0000"
+			};
+
+			// Act
+			var exception = await Assert.ThrowsExactlyAsync<ArgumentException>(async () => _ = await _client.CreateCalendarAsync(createRequest, TestContext.CancellationToken));
+
+			// Assert
+			Assert.IsNotNull(exception);
+			Assert.AreEqual("Calendar color must be a valid hex color code (#RRGGBB, e.g. #aBc123). (Parameter 'Color')", exception.Message);
+		}
+
+		[TestMethod]
+		public async Task ShouldAllowCreateCalendarWithoutColor()
+		{
+			// Arrange
+			EnqueueResponses(
+				CreateResponse(HttpStatusCode.OK, headers: new Dictionary<string, string> { ["DAV"] = "1, calendar-access" }),
+				CreateResponse(HttpStatusCode.MultiStatus, CurrentPrincipalResponseXml("/principals/user/")),
+				CreateResponse(HttpStatusCode.MultiStatus, CalendarListResponseXml("/calendars/user/work/", "Work")),
+				CreateResponse(HttpStatusCode.Created));
+			var createRequest = new CreateCalendarRequest("simple")
+			{
+				DisplayName = "Simple Calendar"
+			};
+
+			// Act
+			bool result = await _client.CreateCalendarAsync(createRequest, TestContext.CancellationToken);
+
+			// Assert
+			Assert.IsTrue(result);
+		}
+
+		[TestMethod]
 		public async Task ShouldDeleteCalendarWithoutIfMatchWhenNoEtag()
 		{
 			// Arrange

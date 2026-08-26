@@ -16,6 +16,7 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = new XmlNamespaceManager(xDoc.NameTable);
 			namespaceManager.AddNamespace("d", "DAV:");
 			namespaceManager.AddNamespace("cal", "urn:ietf:params:xml:ns:caldav");
+			namespaceManager.AddNamespace("ical", "http://apple.com/ns/ical/");
 
 			var node = xDoc.SelectSingleNode(path, namespaceManager);
 			return node?.InnerText;
@@ -31,6 +32,7 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = new XmlNamespaceManager(xDoc.NameTable);
 			namespaceManager.AddNamespace("d", "DAV:");
 			namespaceManager.AddNamespace("cal", "urn:ietf:params:xml:ns:caldav");
+			namespaceManager.AddNamespace("ical", "http://apple.com/ns/ical/");
 
 			var responses = xDoc.SelectNodes("//d:response", namespaceManager);
 			if (responses == null)
@@ -69,6 +71,10 @@ namespace AMWD.Protocols.CalDAV.Xml
 				if (!string.IsNullOrWhiteSpace(etag?.InnerText))
 					calendar.ETag = etag!.InnerText.Trim().Trim('"');
 
+				var color = response.SelectSingleNode(".//ical:calendar-color", namespaceManager);
+				if (!string.IsNullOrWhiteSpace(color?.InnerText))
+					calendar.Color = color!.InnerText.Trim();
+
 				calendars.Add(calendar);
 			}
 
@@ -85,6 +91,7 @@ namespace AMWD.Protocols.CalDAV.Xml
 			var namespaceManager = new XmlNamespaceManager(xDoc.NameTable);
 			namespaceManager.AddNamespace("d", "DAV:");
 			namespaceManager.AddNamespace("cal", "urn:ietf:params:xml:ns:caldav");
+			namespaceManager.AddNamespace("ical", "http://apple.com/ns/ical/");
 
 			var responses = xDoc.SelectNodes("//d:response", namespaceManager);
 			if (responses == null)

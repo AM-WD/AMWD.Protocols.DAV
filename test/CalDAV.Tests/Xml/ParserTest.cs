@@ -82,7 +82,7 @@ END:VCALENDAR</cal:calendar-data>
 		public void ShouldParseCalendarsFromResponseXml()
 		{
 			// Arrange
-			var principalUri = new Uri("https://example.com/" );
+			var principalUri = new Uri("https://example.com/");
 
 			// Act
 			var calendars = Parser.CalendarList(_calendarXml, principalUri);
@@ -149,7 +149,7 @@ END:VCALENDAR</cal:calendar-data>
 			Assert.IsNull(value);
 		}
 
-		#endregion
+		#endregion ExtractPathValue Tests
 
 		#region CalendarList Tests
 
@@ -294,7 +294,100 @@ END:VCALENDAR</cal:calendar-data>
 			Assert.DoesNotContain("\"", calendar.ETag);
 		}
 
-		#endregion
+		[TestMethod]
+		public void ShouldParseCalendarWithColor()
+		{
+			// Arrange
+			string xmlWithColor = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<d:multistatus xmlns:d=""DAV:"" xmlns:cal=""urn:ietf:params:xml:ns:caldav"" xmlns:ical=""http://apple.com/ns/ical/"">
+  <d:response>
+	<d:href>/calendars/colored/</d:href>
+	<d:propstat>
+	  <d:prop>
+		<d:displayname>Colored Calendar</d:displayname>
+		<ical:calendar-color>#FF0000FF</ical:calendar-color>
+	  </d:prop>
+	</d:propstat>
+	<d:resourcetype>
+	  <cal:calendar />
+	</d:resourcetype>
+  </d:response>
+</d:multistatus>";
+			var principalUri = new Uri("https://example.com/");
+
+			// Act
+			var calendars = Parser.CalendarList(xmlWithColor, principalUri);
+
+			// Assert
+			Assert.HasCount(1, calendars);
+			var calendar = calendars.First();
+			Assert.AreEqual("colored", calendar.Name);
+			Assert.AreEqual("Colored Calendar", calendar.DisplayName);
+			Assert.AreEqual("#FF0000FF", calendar.Color);
+		}
+
+		[TestMethod]
+		public void ShouldParseMultipleCalendarsWithDifferentColors()
+		{
+			// Arrange
+			string xmlMultipleWithColors = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+<d:multistatus xmlns:d=""DAV:"" xmlns:cal=""urn:ietf:params:xml:ns:caldav"" xmlns:ical=""http://apple.com/ns/ical/"">
+  <d:response>
+	<d:href>/calendars/red/</d:href>
+	<d:propstat>
+	  <d:prop>
+		<d:displayname>Red Calendar</d:displayname>
+		<ical:calendar-color>#FF0000FF</ical:calendar-color>
+	  </d:prop>
+	</d:propstat>
+	<d:resourcetype>
+	  <cal:calendar />
+	</d:resourcetype>
+  </d:response>
+  <d:response>
+	<d:href>/calendars/blue/</d:href>
+	<d:propstat>
+	  <d:prop>
+		<d:displayname>Blue Calendar</d:displayname>
+		<ical:calendar-color>#0000FFFF</ical:calendar-color>
+	  </d:prop>
+	</d:propstat>
+	<d:resourcetype>
+	  <cal:calendar />
+	</d:resourcetype>
+  </d:response>
+  <d:response>
+	<d:href>/calendars/nocolor/</d:href>
+	<d:propstat>
+	  <d:prop>
+		<d:displayname>No Color Calendar</d:displayname>
+	  </d:prop>
+	</d:propstat>
+	<d:resourcetype>
+	  <cal:calendar />
+	</d:resourcetype>
+  </d:response>
+</d:multistatus>";
+			var principalUri = new Uri("https://example.com/");
+
+			// Act
+			var calendars = Parser.CalendarList(xmlMultipleWithColors, principalUri);
+
+			// Assert
+			Assert.HasCount(3, calendars);
+			var calendarList = calendars.ToList();
+
+			Assert.AreEqual("red", calendarList[0].Name);
+			Assert.AreEqual("#FF0000FF", calendarList[0].Color);
+
+			Assert.AreEqual("blue", calendarList[1].Name);
+			Assert.AreEqual("#0000FFFF", calendarList[1].Color);
+
+			Assert.AreEqual("nocolor", calendarList[2].Name);
+			Assert.IsNull(calendarList[2].Color);
+		}
+
+		#endregion CalendarList Tests
 
 		#region EventList Tests
 
@@ -505,6 +598,6 @@ END:VCALENDAR</cal:calendar-data>
 			Assert.DoesNotContain("\"", calendarEvent.ETag);
 		}
 
-		#endregion
+		#endregion EventList Tests
 	}
 }

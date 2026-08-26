@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-_no changes yet_
+##### Diffs
+
+- [CalDAV v0.1.1-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/cal/v0.1.0...main)
+
+### Added
+
+- `CalDAV` enhanced by calendar-color support using XML namespace `http://apple.com/ns/ical/`
+
 
 ## CalDAV v0.1.0 | CardDAV v0.1.0 - 2026-08-20
 
 ##### Diffs
 
-- [CalDAV](https://github.com/AM-WD/AMWD.Protocols.DAV/commits/cal/v0.1.0)
-- [CardDAV](https://github.com/AM-WD/AMWD.Protocols.DAV/commits/card/v0.1.0)
+- [CalDAV v0.1.0](https://github.com/AM-WD/AMWD.Protocols.DAV/commits/cal/v0.1.0)
+- [CardDAV v0.1.0](https://github.com/AM-WD/AMWD.Protocols.DAV/commits/card/v0.1.0)
 
 ### Added
 

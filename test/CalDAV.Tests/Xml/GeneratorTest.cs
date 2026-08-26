@@ -7,19 +7,11 @@ namespace CalDAV.Tests.Xml
 	[TestClass]
 	public class GeneratorTest
 	{
-		private string _displayName;
-		private string _description;
-		private DateTimeOffset _start;
-		private DateTimeOffset _end;
-
-		[TestInitialize]
-		public void Initialize()
-		{
-			_displayName = "Team Calendar";
-			_description = "Shared team calendar";
-			_start = new DateTimeOffset(2025, 1, 10, 8, 0, 0, TimeSpan.Zero);
-			_end = new DateTimeOffset(2025, 2, 15, 8, 0, 0, TimeSpan.Zero);
-		}
+		private const string DisplayName = "Team Calendar";
+		private const string Description = "Shared team calendar";
+		private const string Color = "#ff00ff";
+		private readonly DateTimeOffset _start = new(2025, 1, 10, 8, 0, 0, TimeSpan.Zero);
+		private readonly DateTimeOffset _end = new(2025, 2, 15, 8, 0, 0, TimeSpan.Zero);
 
 		[TestMethod]
 		public void ShouldGenerateCurrentUserPrincipalRequest()
@@ -51,7 +43,7 @@ namespace CalDAV.Tests.Xml
 			// Arrange
 
 			// Act
-			string xml = Generator.CreateCalendar(_displayName, _description);
+			string xml = Generator.CreateCalendar(DisplayName, Description, Color);
 
 			// Assert
 			SnapshotAssert.AreEqual(xml);

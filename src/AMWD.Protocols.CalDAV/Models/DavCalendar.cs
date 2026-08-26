@@ -36,5 +36,10 @@ namespace AMWD.Protocols.CalDAV
 		/// Gets or sets the ETag of the calendar, which is a unique identifier that changes whenever the calendar's content changes, allowing clients to detect updates.
 		/// </summary>
 		public string? ETag { get; set; }
+
+		/// <summary>
+		/// Gets or sets the color of the calendar, which can be used to visually distinguish this calendar from others in a user interface.
+		/// </summary>
+		public string? Color { get; set; }
 	}
 }

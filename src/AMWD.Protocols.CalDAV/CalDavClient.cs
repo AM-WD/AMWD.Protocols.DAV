@@ -122,6 +122,10 @@ namespace AMWD.Protocols.CalDAV
 			if (Regex.IsMatch(request.Name, @"[^a-z0-9_-]"))
 				throw new ArgumentException("Calendar name (url-path) can only contain lowercase letters, numbers, hyphens and underscores.", nameof(request.Name));
 
+			// Alternative for short hex codes: @"^#(?:[0-9a-fA-F]{3}){1,2}$"
+			if (!string.IsNullOrWhiteSpace(request.Color) && !Regex.IsMatch(request.Color, @"^#([0-9a-fA-F]{6})$"))
+				throw new ArgumentException("Calendar color must be a valid hex color code (#RRGGBB, e.g. #aBc123).", nameof(request.Color));
+
 			var existingCalendars = await GetCalendarsAsync(cancellationToken);
 			if (existingCalendars.Any(c => c.Uri?.ToString().EndsWith($"/{request.Name}/") == true))
 				throw new InvalidOperationException($"A calendar with the name '{request.Name}' already exists.");
@@ -130,7 +134,7 @@ namespace AMWD.Protocols.CalDAV
 
 			var httpRequest = new HttpRequestMessage(_httpMethodMkCalendar, calendarUri)
 			{
-				Content = new StringContent(Generator.CreateCalendar(request.DisplayName, request.Description), Encoding.UTF8, XmlMimeType)
+				Content = new StringContent(Generator.CreateCalendar(request.DisplayName, request.Description, request.Color), Encoding.UTF8, XmlMimeType)
 			};
 
 			var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken);
