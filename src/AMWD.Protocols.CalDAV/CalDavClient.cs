@@ -79,7 +79,7 @@ namespace AMWD.Protocols.CalDAV
 		{
 			try
 			{
-				PrincipalUri = await DiscoverCurrentPrincipalAsync(cancellationToken);
+				PrincipalUri = await DiscoverCurrentPrincipalAsync(cancellationToken).ConfigureAwait(false);
 				if (PrincipalUri == null)
 					return false;
 
@@ -96,24 +96,24 @@ namespace AMWD.Protocols.CalDAV
 		/// <inheritdoc/>
 		public async Task<IReadOnlyCollection<DavCalendar>> GetCalendarsAsync(CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			var request = new HttpRequestMessage(_httpMethodPropfind, PrincipalUri);
 			request.Headers.Add("Depth", "1");
 			request.Content = new StringContent(Generator.FindCalendars(), Encoding.UTF8, XmlMimeType);
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+			var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
 
-			string xmlResponse = await response.Content.ReadAsStringAsync();
+			string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return Parser.CalendarList(xmlResponse, PrincipalUri);
 		}
 
 		/// <inheritdoc/>
 		public async Task<bool> CreateCalendarAsync(CreateCalendarRequest request, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (string.IsNullOrWhiteSpace(request.Name))
@@ -126,7 +126,7 @@ namespace AMWD.Protocols.CalDAV
 			if (!string.IsNullOrWhiteSpace(request.Color) && !Regex.IsMatch(request.Color, @"^#([0-9a-fA-F]{6})$"))
 				throw new ArgumentException("Calendar color must be a valid hex color code (#RRGGBB, e.g. #aBc123).", nameof(request.Color));
 
-			var existingCalendars = await GetCalendarsAsync(cancellationToken);
+			var existingCalendars = await GetCalendarsAsync(cancellationToken).ConfigureAwait(false);
 			if (existingCalendars.Any(c => c.Uri?.ToString().EndsWith($"/{request.Name}/") == true))
 				throw new InvalidOperationException($"A calendar with the name '{request.Name}' already exists.");
 
@@ -137,20 +137,20 @@ namespace AMWD.Protocols.CalDAV
 				Content = new StringContent(Generator.CreateCalendar(request.DisplayName, request.Description, request.Color), Encoding.UTF8, XmlMimeType)
 			};
 
-			var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			return httpResponse.IsSuccessStatusCode;
 		}
 
 		/// <inheritdoc/>
 		public async Task<bool> DeleteCalendarAsync(DavCalendar calendar, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (calendar == null)
 				throw new ArgumentNullException(nameof(calendar), "A calendar is required.");
 
-			var existingCalendars = await GetCalendarsAsync(cancellationToken);
+			var existingCalendars = await GetCalendarsAsync(cancellationToken).ConfigureAwait(false);
 			var calendarUri = existingCalendars
 				.Where(c => c.Uri?.ToString().EndsWith($"/{calendar.Name}/") == true)
 				.Select(c => c.Uri)
@@ -163,7 +163,7 @@ namespace AMWD.Protocols.CalDAV
 			if (!string.IsNullOrWhiteSpace(calendar.ETag))
 				request.Headers.IfMatch.Add(new EntityTagHeaderValue($"\"{calendar.ETag}\""));
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+			var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 			return response.IsSuccessStatusCode;
 		}
 
@@ -174,13 +174,13 @@ namespace AMWD.Protocols.CalDAV
 		/// <inheritdoc/>
 		public async Task<IReadOnlyCollection<DavEvent>> GetEventsAsync(DavCalendar calendar, DateTimeOffset? start = null, DateTimeOffset? end = null, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (calendar == null)
 				throw new ArgumentNullException(nameof(calendar), "A calendar is required.");
 
-			var existingCalendars = await GetCalendarsAsync(cancellationToken);
+			var existingCalendars = await GetCalendarsAsync(cancellationToken).ConfigureAwait(false);
 			var calendarUri = existingCalendars
 				.Where(c => c.Uri?.ToString().EndsWith($"/{calendar.Name}/") == true)
 				.Select(c => c.Uri)
@@ -193,23 +193,23 @@ namespace AMWD.Protocols.CalDAV
 			request.Headers.Add("Depth", "1");
 			request.Content = new StringContent(Generator.FindEvents(start, end), Encoding.UTF8, XmlMimeType);
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+			var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
 
-			string xmlResponse = await response.Content.ReadAsStringAsync();
+			string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return Parser.EventList(xmlResponse, calendarUri);
 		}
 
 		/// <inheritdoc/>
 		public async Task<Uri> CreateEventAsync(DavCalendar calendar, CalendarEvent iCalEvent, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (calendar == null)
 				throw new ArgumentNullException(nameof(calendar), "A calendar is required.");
 
-			var existingCalendars = await GetCalendarsAsync(cancellationToken);
+			var existingCalendars = await GetCalendarsAsync(cancellationToken).ConfigureAwait(false);
 			var calendarUri = existingCalendars
 				.Where(c => c.Uri?.ToString().EndsWith($"/{calendar.Name}/") == true)
 				.Select(c => c.Uri)
@@ -232,7 +232,7 @@ namespace AMWD.Protocols.CalDAV
 			httpRequest.Headers.Add("If-None-Match", "*");
 			httpRequest.Content = new StringContent(content, Encoding.UTF8, "text/calendar");
 
-			var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
 
 			return eventUri;
@@ -241,13 +241,13 @@ namespace AMWD.Protocols.CalDAV
 		/// <inheritdoc/>
 		public async Task<bool> UpdateEventAsync(DavCalendar calendar, CalendarEvent iCalEvent, string? eTag = null, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (calendar == null)
 				throw new ArgumentNullException(nameof(calendar), "A calendar is required.");
 
-			var existingCalendars = await GetCalendarsAsync(cancellationToken);
+			var existingCalendars = await GetCalendarsAsync(cancellationToken).ConfigureAwait(false);
 			var calendarUri = existingCalendars
 				.Where(c => c.Uri?.ToString().EndsWith($"/{calendar.Name}/") == true)
 				.Select(c => c.Uri)
@@ -272,20 +272,20 @@ namespace AMWD.Protocols.CalDAV
 
 			httpRequest.Content = new StringContent(content, Encoding.UTF8, "text/calendar");
 
-			var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			return response.IsSuccessStatusCode;
 		}
 
 		/// <inheritdoc/>
 		public async Task<bool> DeleteEventAsync(DavCalendar calendar, CalendarEvent iCalEvent, string? eTag = null, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (calendar == null)
 				throw new ArgumentNullException(nameof(calendar), "A calendar is required.");
 
-			var existingCalendars = await GetCalendarsAsync(cancellationToken);
+			var existingCalendars = await GetCalendarsAsync(cancellationToken).ConfigureAwait(false);
 			var calendarUri = existingCalendars
 				.Where(c => c.Uri?.ToString().EndsWith($"/{calendar.Name}/") == true)
 				.Select(c => c.Uri)
@@ -301,7 +301,7 @@ namespace AMWD.Protocols.CalDAV
 			if (!string.IsNullOrWhiteSpace(eTag))
 				httpRequest.Headers.Add("If-Match", $"\"{eTag}\"");
 
-			var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			return response.IsSuccessStatusCode;
 		}
 
@@ -319,7 +319,7 @@ namespace AMWD.Protocols.CalDAV
 			{
 				string url = urls.Dequeue();
 				var request = new HttpRequestMessage(HttpMethod.Options, url);
-				var response = await _httpClient.SendAsync(request, cancellationToken);
+				var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
 				if (response.StatusCode == HttpStatusCode.Moved || response.StatusCode == HttpStatusCode.Redirect)
 				{
@@ -342,11 +342,11 @@ namespace AMWD.Protocols.CalDAV
 				request.Headers.Add("Depth", "0");
 				request.Content = new StringContent(Generator.CurrentUserPrincipal(), Encoding.UTF8, XmlMimeType);
 
-				response = await _httpClient.SendAsync(request, cancellationToken);
+				response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 				if (!response.IsSuccessStatusCode)
 					continue;
 
-				string xmlResponse = await response.Content.ReadAsStringAsync();
+				string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 				string? principalUrlPath = Parser.ExtractPathValue(xmlResponse, "//d:current-user-principal/d:href");
 
 				if (string.IsNullOrWhiteSpace(principalUrlPath))

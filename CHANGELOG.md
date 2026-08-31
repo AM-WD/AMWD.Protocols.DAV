@@ -10,10 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ##### Diffs
 
 - [CalDAV v0.1.1-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/cal/v0.1.0...main)
+- [CardDAV v0.1.1-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/card/v0.1.0...main)
 
 ### Added
 
 - `CalDAV` enhanced by calendar-color support using XML namespace `http://apple.com/ns/ical/`
+
+### Changed
+
+- Added `ConfigureAwait(false)` to asynchronous calls to avoid deadlocks in certain synchronization contexts.
 
 
 ## CalDAV v0.1.0 | CardDAV v0.1.0 - 2026-08-20

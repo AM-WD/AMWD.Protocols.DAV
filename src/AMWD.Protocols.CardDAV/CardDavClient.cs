@@ -78,7 +78,7 @@ namespace AMWD.Protocols.CardDAV
 		{
 			try
 			{
-				PrincipalUri = await DiscoverCurrentPrincipalAsync(cancellationToken);
+				PrincipalUri = await DiscoverCurrentPrincipalAsync(cancellationToken).ConfigureAwait(false);
 				if (PrincipalUri == null)
 					return false;
 
@@ -95,24 +95,24 @@ namespace AMWD.Protocols.CardDAV
 		/// <inheritdoc/>
 		public async Task<IReadOnlyCollection<DavAddressBook>> GetAddressBooksAsync(CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			var request = new HttpRequestMessage(_httpMethodPropfind, PrincipalUri);
 			request.Headers.Add("Depth", "1");
 			request.Content = new StringContent(Generator.FindAddressBooks(), Encoding.UTF8, XmlMimeType);
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+			var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
 
-			string xmlResponse = await response.Content.ReadAsStringAsync();
+			string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return Parser.AddressBookList(xmlResponse, PrincipalUri);
 		}
 
 		/// <inheritdoc/>
 		public async Task<bool> CreateAddressBookAsync(CreateAddressBookRequest request, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (string.IsNullOrWhiteSpace(request.Name))
@@ -121,7 +121,7 @@ namespace AMWD.Protocols.CardDAV
 			if (Regex.IsMatch(request.Name, @"[^a-z0-9_-]"))
 				throw new ArgumentException("Address book name (url-path) can only contain lowercase letters, numbers, hyphens and underscores.", nameof(request.Name));
 
-			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken);
+			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken).ConfigureAwait(false);
 			if (existingAddressBooks.Any(c => c.Uri?.ToString().EndsWith($"/{request.Name}/") == true))
 				throw new InvalidOperationException($"An address book with the name '{request.Name}' already exists.");
 
@@ -132,20 +132,20 @@ namespace AMWD.Protocols.CardDAV
 				Content = new StringContent(Generator.CreateAddressBook(request.DisplayName, request.Description), Encoding.UTF8, XmlMimeType)
 			};
 
-			var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var httpResponse = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			return httpResponse.IsSuccessStatusCode;
 		}
 
 		/// <inheritdoc/>
 		public async Task<bool> DeleteAddressBookAsync(DavAddressBook addressBook, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (addressBook == null)
 				throw new ArgumentNullException(nameof(addressBook), "An address book is required.");
 
-			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken);
+			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken).ConfigureAwait(false);
 			var addressBookUri = existingAddressBooks
 				.Where(c => c.Uri?.ToString().EndsWith($"/{addressBook.Name}/") == true)
 				.Select(c => c.Uri)
@@ -158,7 +158,7 @@ namespace AMWD.Protocols.CardDAV
 			if (!string.IsNullOrWhiteSpace(addressBook.ETag))
 				request.Headers.IfMatch.Add(new EntityTagHeaderValue($"\"{addressBook.ETag}\""));
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+			var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 			return response.IsSuccessStatusCode;
 		}
 
@@ -169,13 +169,13 @@ namespace AMWD.Protocols.CardDAV
 		/// <inheritdoc/>
 		public async Task<IReadOnlyCollection<DavCard>> GetCardsAsync(DavAddressBook addressBook, string? name = null, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (addressBook == null)
 				throw new ArgumentNullException(nameof(addressBook), "An address book is required.");
 
-			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken);
+			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken).ConfigureAwait(false);
 			var addressBookUri = existingAddressBooks
 				.Where(c => c.Uri?.ToString().EndsWith($"/{addressBook.Name}/") == true)
 				.Select(c => c.Uri)
@@ -188,23 +188,23 @@ namespace AMWD.Protocols.CardDAV
 			request.Headers.Add("Depth", "1");
 			request.Content = new StringContent(Generator.FindCards(name), Encoding.UTF8, XmlMimeType);
 
-			var response = await _httpClient.SendAsync(request, cancellationToken);
+			var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
 
-			string xmlResponse = await response.Content.ReadAsStringAsync();
+			string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 			return Parser.CardList(xmlResponse, addressBookUri);
 		}
 
 		/// <inheritdoc/>
 		public async Task<Uri> CreateCardAsync(DavAddressBook addressBook, VCard vCard, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (addressBook == null)
 				throw new ArgumentNullException(nameof(addressBook), "An address book is required.");
 
-			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken);
+			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken).ConfigureAwait(false);
 			var addressBookUri = existingAddressBooks
 				.Where(c => c.Uri?.ToString().EndsWith($"/{addressBook.Name}/") == true)
 				.Select(c => c.Uri)
@@ -223,7 +223,7 @@ namespace AMWD.Protocols.CardDAV
 			httpRequest.Headers.Add("If-None-Match", "*");
 			httpRequest.Content = new StringContent(content, Encoding.UTF8, "text/vcard");
 
-			var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			response.EnsureSuccessStatusCode();
 
 			return cardUri;
@@ -232,13 +232,13 @@ namespace AMWD.Protocols.CardDAV
 		/// <inheritdoc/>
 		public async Task<bool> UpdateCardAsync(DavAddressBook addressBook, VCard vCard, string? eTag = null, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (addressBook == null)
 				throw new ArgumentNullException(nameof(addressBook), "An address book is required.");
 
-			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken);
+			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken).ConfigureAwait(false);
 			var addressBookUri = existingAddressBooks
 				.Where(c => c.Uri?.ToString().EndsWith($"/{addressBook.Name}/") == true)
 				.Select(c => c.Uri)
@@ -259,20 +259,20 @@ namespace AMWD.Protocols.CardDAV
 
 			httpRequest.Content = new StringContent(content, Encoding.UTF8, "text/vcard");
 
-			var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			return response.IsSuccessStatusCode;
 		}
 
 		/// <inheritdoc/>
 		public async Task<bool> DeleteCardAsync(DavAddressBook addressBook, VCard vCard, string? eTag = null, CancellationToken cancellationToken = default)
 		{
-			if (PrincipalUri == null && !await InitializeAsync(cancellationToken))
+			if (PrincipalUri == null && !await InitializeAsync(cancellationToken).ConfigureAwait(false))
 				throw new InvalidOperationException("Cannot run with an uninitialized client.");
 
 			if (addressBook == null)
 				throw new ArgumentNullException(nameof(addressBook), "An address book is required.");
 
-			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken);
+			var existingAddressBooks = await GetAddressBooksAsync(cancellationToken).ConfigureAwait(false);
 			var addressBookUri = existingAddressBooks
 				.Where(c => c.Uri?.ToString().EndsWith($"/{addressBook.Name}/") == true)
 				.Select(c => c.Uri)
@@ -287,7 +287,7 @@ namespace AMWD.Protocols.CardDAV
 			if (!string.IsNullOrWhiteSpace(eTag))
 				httpRequest.Headers.Add("If-Match", $"\"{eTag}\"");
 
-			var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+			var response = await _httpClient.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false);
 			return response.IsSuccessStatusCode;
 		}
 
@@ -305,7 +305,7 @@ namespace AMWD.Protocols.CardDAV
 			{
 				string url = urls.Dequeue();
 				var request = new HttpRequestMessage(HttpMethod.Options, url);
-				var response = await _httpClient.SendAsync(request, cancellationToken);
+				var response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
 				if (response.StatusCode == HttpStatusCode.Moved || response.StatusCode == HttpStatusCode.Redirect)
 				{
@@ -328,11 +328,11 @@ namespace AMWD.Protocols.CardDAV
 				request.Headers.Add("Depth", "0");
 				request.Content = new StringContent(Generator.CurrentUserPrincipal(), Encoding.UTF8, XmlMimeType);
 
-				response = await _httpClient.SendAsync(request, cancellationToken);
+				response = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 				if (!response.IsSuccessStatusCode)
 					continue;
 
-				string xmlResponse = await response.Content.ReadAsStringAsync();
+				string xmlResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 				string? principalUrlPath = Parser.ExtractPathValue(xmlResponse, "//d:current-user-principal/d:href");
 
 				if (string.IsNullOrWhiteSpace(principalUrlPath))
