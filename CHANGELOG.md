@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+_no changes yet_
+
+
+## CalDAV v0.1.1 | CardDAV v0.1.1 - 2026-09-28
+
 ##### Diffs
 
-- [CalDAV v0.1.1-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/cal/v0.1.0...main)
-- [CardDAV v0.1.1-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/card/v0.1.0...main)
+- [CalDAV v0.1.1](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/cal/v0.1.0...cal/v0.1.1)
+- [CardDAV v0.1.1](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/card/v0.1.0...card/v0.1.1)
 
 ### Added
 
