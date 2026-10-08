@@ -28,7 +28,7 @@ jobs:
 
   build-test-deploy:
     needs: [ prepare ]
-    runs-on: ubuntu
+    runs-on: server-runner
 
     defaults:
       run:
@@ -52,17 +52,18 @@ jobs:
       - name: Restore Tools
         run: |
           set -ex
+          git remote add github https://github.com/AM-WD/AMWD.Protocols.DAV.git
           dotnet tool install dotnet-reportgenerator-globaltool --tool-path /dotnet-tools
 
       - name: Build Solution
         run: |
           set -ex
-          dotnet build -c ${CONFIGURATION} --nologo --restore --force --no-cache
+          dotnet build -c ${CONFIGURATION} --nologo --restore --force --no-cache -p:GitRepositoryRemoteName=github
 
       - name: Test Solution
         run: |
           set -ex
-          dotnet test -c ${CONFIGURATION} --nologo --no-build /p:CoverletOutputFormat=Cobertura
+          dotnet test -c ${CONFIGURATION} --nologo --no-build -p:CoverletOutputFormat=Cobertura
           /dotnet-tools/reportgenerator "-reports:${{ github.workspace }}/**/coverage.cobertura.xml" "-targetdir:/reports" "-reportType:TextSummary"
           cat /reports/Summary.txt
 

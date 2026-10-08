@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-_no changes yet_
+##### Diffs
+
+- [CalDAV v0.1.2-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/cal/v0.1.1...main)
+- [CardDAV v0.1.2-x](https://github.com/AM-WD/AMWD.Protocols.DAV/compare/card/v0.1.1...main)
+
+### Changed
+
+- Use SourceLink of GitHub instead of Gitea for better availability on Releases
+- Updated dependencies
 
 
 ## CalDAV v0.1.1 | CardDAV v0.1.1 - 2026-09-28

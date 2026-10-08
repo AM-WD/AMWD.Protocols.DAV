@@ -86,7 +86,7 @@ jobs:
       - name: Test Solution
         run: |
           set -ex
-          dotnet test -c ${CONFIGURATION} --nologo --no-build /p:CoverletOutputFormat=Cobertura
+          dotnet test -c ${CONFIGURATION} --nologo --no-build -p:CoverletOutputFormat=Cobertura
           /dotnet-tools/reportgenerator "-reports:${{ github.workspace }}/**/coverage.cobertura.xml" "-targetdir:/reports" "-reportType:TextSummary"
           cat /reports/Summary.txt
 
